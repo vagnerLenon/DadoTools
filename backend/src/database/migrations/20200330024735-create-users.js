@@ -22,6 +22,15 @@ module.exports = {
           allowNull: false,
           unique: true,
         },
+        codigo_cigam: {
+          type: Sequelize.STRING(6),
+          allowNull: true,
+          defaultValue: ''
+        },
+        is_sales: {
+          type: Sequelize.BOOLEAN,
+          defaultValue: 0
+        },
         password_hash: {
           type: Sequelize.STRING,
           allowNull: false,
