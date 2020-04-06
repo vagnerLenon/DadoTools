@@ -11,4 +11,5 @@ database: credenciais.banco,
     underscored: true,
     underscoredAll: true,
   },
+  logging: false
 };

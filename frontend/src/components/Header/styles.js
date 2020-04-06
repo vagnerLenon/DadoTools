@@ -1,13 +1,13 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  height: 64px;
+  height: 48px;
   background: #fff;
   padding: 0 30px;
   box-shadow: 0 1px 0 1px rgba(0, 0, 0, 0.1);
 `;
 export const Content = styled.div`
-  height: 64px;
+  height: 48px;
   max-width: 900px;
   margin: 0 auto;
   display: flex;
@@ -22,7 +22,7 @@ export const Content = styled.div`
       margin-right: 20px;
       padding-right: 20px;
       border-right: 1px solid #eee;
-      height: 36px;
+      height: 40px;
     }
     a {
       font-weight: bold;
@@ -60,8 +60,9 @@ export const Profile = styled.div`
   }
 
   img {
-    height: 36px;
-    width: 36px;
+    height: 40px;
+    width: 40px;
     border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.6);
   }
 `;

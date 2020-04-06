@@ -17,6 +17,7 @@ export const Content = styled.div`
   img {
     max-height: 64px;
     max-width: 64px;
+    text-shadow: 5px 5px;
   }
 
   form {
@@ -40,7 +41,7 @@ export const Content = styled.div`
     }
 
     span {
-      color: #fb6f91;
+      color: #e11f1c;
       align-self: flex-start;
       margin: 0 0 10px;
       font-weight: bold;
