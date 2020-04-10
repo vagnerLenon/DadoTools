@@ -9,6 +9,7 @@ import Profile from '~/pages/Profile';
 import Tickets from '~/pages/Tickets';
 import Cadastro from '~/pages/Cadastro';
 import NovoCadastro from '~/pages/Cadastro/NovoCadastro';
+import Detalhes from '~/pages/Cadastro/Detalhes';
 
 export default function Routes() {
   return (
@@ -25,7 +26,9 @@ export default function Routes() {
 
       <Route path="/cadastros/novo" exact component={NovoCadastro} isPrivate />
       <Route path="/cadastros" exact component={Cadastro} isPrivate />
-      <Route path="/cadastros/:id" component={Cadastro} isPrivate />
+
+      <Route path="/cadastros/view/:id" component={Detalhes} isPrivate />
+      <Route path="/cadastros/:id" component={NovoCadastro} isPrivate />
     </Switch>
   );
 }

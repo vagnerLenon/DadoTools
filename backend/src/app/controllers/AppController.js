@@ -2,11 +2,12 @@ import * as Yup from 'yup';
 import jwt from 'jsonwebtoken';
 import {promisify} from 'util';
 
+import chaveToken from '../../credentials/Jwt';
+
 import App from '../models/App';
 import UserApp from '../models/UserApp';
 import {Op} from 'sequelize'
 
-import chaveToken from '../../credentials/Jwt';
 
 class AppController{
   async index(req, res){

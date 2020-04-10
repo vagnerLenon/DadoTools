@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { parseISO, format } from 'date-fns';
 import {
   FaClock,
   FaTimesCircle,
@@ -8,6 +9,7 @@ import {
   FaPlusCircle,
   FaCaretLeft,
   FaCaretDown,
+  FaQuestionCircle,
 } from 'react-icons/fa';
 
 import {
@@ -19,10 +21,32 @@ import {
   PendentesBody,
   ConcluidasBody,
 } from './styles';
+import api from '~/services/api';
 
 export default function Cadastro() {
   const [pendentsVisible, setPendentsVisible] = useState(true);
   const [concluidasVisible, setConcluidassVisible] = useState(false);
+  const [cadastrosPendentes, setCadastrosPendentes] = useState([]);
+  const [cadastrosFinalizados, setCadastrosFinalizados] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadCadastros() {
+      const response = await api.get('cadastro_empresas');
+      setCadastrosPendentes(
+        response.data.filter(
+          cad => cad.status === 'P' || cad.status === 'W' || cad.status === 'A'
+        )
+      );
+      setCadastrosFinalizados(
+        response.data.filter(cad => cad.status !== 'P' && cad.status !== 'W')
+      );
+      setLoading(false);
+    }
+
+    loadCadastros();
+  }, []);
 
   function handlePendentsVisible() {
     setPendentsVisible(!pendentsVisible);
@@ -32,11 +56,59 @@ export default function Cadastro() {
     setConcluidassVisible(!concluidasVisible);
   }
 
+  function IconeStatus(status) {
+    switch (status) {
+      case 'P':
+        // Status pendente de análise
+        return <FaClock size={30} color="#2980b9" title="Pendente" />;
+      case 'R':
+        // Status Recusado, Cadastro negado pelo setor de cadastro
+        return (
+          <FaTimesCircle size={30} color="#c0392b" title="Cadastro negado" />
+        );
+      case 'W':
+        // Status Warning, Aguardando resposta do vendedor
+        return (
+          <FaExclamationCircle
+            size={30}
+            color="#f39c12"
+            title="Aguardando resposta"
+          />
+        );
+      case 'F':
+        // Status Finalizado - CLiente devidamente cadastrado
+        return <FaCheckCircle size={30} color="#27ae60" title="Finalizado" />;
+      case 'A':
+        // Status Análise - Cliente ainda não cadastrado
+        return (
+          <FaQuestionCircle size={30} color="#5f27cd" title="Em análise" />
+        );
+      default:
+        // Como padrão retorna pendente
+        return <FaClock size={30} color="#2980b9" title="Pendente" />;
+    }
+  }
+
+  function formatCnpjCpf(value) {
+    const cnpjCpf = value.replace(/\D/g, '');
+
+    if (cnpjCpf.length === 11) {
+      return cnpjCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g, '$1.$2.$3-$4');
+    }
+
+    return cnpjCpf.replace(
+      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g,
+      '$1.$2.$3/$4-$5'
+    );
+  }
+
   return (
     <Container>
       <New>
-        <Link to="/cadastros/novo">Criar cadastro</Link>
-        <FaPlusCircle size={30} color="#333" />
+        <Link to="/cadastros/novo">
+          Criar cadastro
+          <FaPlusCircle size={30} color="#333" />
+        </Link>
       </New>
       <hr />
       <Title>
@@ -50,77 +122,37 @@ export default function Cadastro() {
         </button>
       </Title>
       <PendentesBody visible={pendentsVisible}>
-        <LinhaCadastro>
-          <div>
-            <header>
+        {loading ? (
+          <h1>Carregando...</h1>
+        ) : (
+          cadastrosPendentes.map(cadastro => (
+            <LinhaCadastro key={String(cadastro.id)}>
               <div>
-                <h2>Empresa</h2>
-                <button type="button">[Editar]</button>
-                <button type="button">[Ver]</button>
+                <header>
+                  <div>
+                    <h2>{cadastro.razao_social}</h2>
+                    {cadastro.status === 'P' && (
+                      <Link to={`/cadastros/${cadastro.id}`}>[Editar]</Link>
+                    )}
+
+                    <Link to={`/cadastros/view/${cadastro.id}`}>[Ver]</Link>
+                  </div>
+                  <span>
+                    {format(parseISO(cadastro.createdAt), 'dd/MM/YYY HH:mm')}
+                  </span>
+                </header>
+                <strong>CNPJ/CPF: </strong>
+                {formatCnpjCpf(cadastro.cnpj_cpf)}
+                <strong>Endereço:</strong> {cadastro.logradouro}{' '}
+                {cadastro.numero}
+                {cadastro.complemento !== '' ? ', ' : ''} {cadastro.complemento}{' '}
+                - {cadastro.bairro} - {cadastro.municipio} - {cadastro.estado}
               </div>
-              <span>25/10/2020 : 10:15</span>
-            </header>
-            <strong>CNPJ/CPF:</strong> 05.090.366/0001-12
-            <strong>Endereço:</strong> Avenida Getulio vargas 626, apartamento
-            103 - Menino Deus - Porto Alegre - RS
-          </div>
 
-          <FaClock size={30} color="#2980b9" />
-        </LinhaCadastro>
-
-        <LinhaCadastro>
-          <div>
-            <header>
-              <div>
-                <h2>Empresa</h2>
-                <button type="button">[Editar]</button>
-                <button type="button">[Ver]</button>
-              </div>
-              <span>25/10/2020 : 10:15</span>
-            </header>
-            <strong>CNPJ/CPF:</strong> 05.090.366/0001-12
-            <strong>Endereço:</strong> Avenida Getulio vargas 626, apartamento
-            103 - Menino Deus - Porto Alegre - RS
-          </div>
-
-          <FaClock size={30} color="#2980b9" />
-        </LinhaCadastro>
-
-        <LinhaCadastro>
-          <div>
-            <header>
-              <div>
-                <h2>Empresa</h2>
-                <button type="button">[Editar]</button>
-                <button type="button">[Ver]</button>
-              </div>
-              <span>25/10/2020 : 10:15</span>
-            </header>
-            <strong>CNPJ/CPF:</strong> 05.090.366/0001-12
-            <strong>Endereço:</strong> Avenida Getulio vargas 626, apartamento
-            103 - Menino Deus - Porto Alegre - RS
-          </div>
-
-          <FaClock size={30} color="#2980b9" />
-        </LinhaCadastro>
-
-        <LinhaCadastro>
-          <div>
-            <header>
-              <div>
-                <h2>Empresa</h2>
-                <button type="button">[Editar]</button>
-                <button type="button">[Ver]</button>
-              </div>
-              <span>25/10/2020 : 10:15</span>
-            </header>
-            <strong>CNPJ/CPF:</strong> 05.090.366/0001-12
-            <strong>Endereço:</strong> Avenida Getulio vargas 626, apartamento
-            103 - Menino Deus - Porto Alegre - RS
-          </div>
-
-          <FaClock size={30} color="#2980b9" />
-        </LinhaCadastro>
+              {IconeStatus(cadastro.status)}
+            </LinhaCadastro>
+          ))
+        )}
       </PendentesBody>
       <hr />
 
@@ -135,100 +167,32 @@ export default function Cadastro() {
         </button>
       </Title>
       <ConcluidasBody visible={concluidasVisible}>
-        <Concluidas>
-          <div>
-            <header>
+        {loading ? (
+          <h1>Carregando...</h1>
+        ) : (
+          cadastrosFinalizados.map(cadastro => (
+            <Concluidas key={String(cadastro.id)}>
               <div>
-                <h2>Empresa</h2>
-                <button type="button">[Ver]</button>
+                <header>
+                  <div>
+                    <h2>{cadastro.razao_social}</h2>
+                    <Link to={`/cadastros/view/${cadastro.id}`}>[Ver]</Link>
+                  </div>
+                  <span>
+                    {format(parseISO(cadastro.createdAt), 'dd/MM/YYY HH:mm')}
+                  </span>
+                </header>
+                <strong>CNPJ/CPF: </strong>
+                {formatCnpjCpf(cadastro.cnpj_cpf)}
+                <strong>Endereço: </strong>
+                {cadastro.logradouro} {cadastro.numero}
+                {cadastro.complemento !== '' ? ', ' : ''} {cadastro.complemento}{' '}
+                - {cadastro.bairro} - {cadastro.municipio} - {cadastro.estado}
               </div>
-              <span>25/10/2020 : 10:15</span>
-            </header>
-            <strong>CNPJ/CPF:</strong>
-            05.090.366/0001-12
-            <strong>Endereço:</strong>
-            Avenida Getulio vargas 626, apartamento 103 - Menino Deus - Porto
-            Alegre - RS
-          </div>
-
-          <FaCheckCircle size={30} color="#27ae60" />
-        </Concluidas>
-
-        <Concluidas>
-          <div>
-            <header>
-              <div>
-                <h2>Empresa</h2>
-                <button type="button">[Ver]</button>
-              </div>
-              <span>25/10/2020 : 10:15</span>
-            </header>
-            <strong>CNPJ/CPF:</strong>
-            05.090.366/0001-12
-            <strong>Endereço:</strong>
-            Avenida Getulio vargas 626, apartamento 103 - Menino Deus - Porto
-            Alegre - RS
-          </div>
-
-          <FaTimesCircle size={30} color="#c0392b" />
-        </Concluidas>
-
-        <Concluidas>
-          <div>
-            <header>
-              <div>
-                <h2>Empresa</h2>
-                <button type="button">[Ver]</button>
-              </div>
-              <span>25/10/2020 : 10:15</span>
-            </header>
-            <strong>CNPJ/CPF:</strong>
-            05.090.366/0001-12
-            <strong>Endereço:</strong>
-            Avenida Getulio vargas 626, apartamento 103 - Menino Deus - Porto
-            Alegre - RS
-          </div>
-
-          <FaTimesCircle size={30} color="#c0392b" />
-        </Concluidas>
-
-        <Concluidas>
-          <div>
-            <header>
-              <div>
-                <h2>Empresa</h2>
-                <button type="button">[Ver]</button>
-              </div>
-              <span>25/10/2020 : 10:15</span>
-            </header>
-            <strong>CNPJ/CPF:</strong>
-            05.090.366/0001-12
-            <strong>Endereço:</strong>
-            Avenida Getulio vargas 626, apartamento 103 - Menino Deus - Porto
-            Alegre - RS
-          </div>
-
-          <FaTimesCircle size={30} color="#c0392b" />
-        </Concluidas>
-
-        <Concluidas>
-          <div>
-            <header>
-              <div>
-                <h2>Empresa</h2>
-                <button type="button">[Ver]</button>
-              </div>
-              <span>25/10/2020 : 10:15</span>
-            </header>
-            <strong>CNPJ/CPF:</strong>
-            05.090.366/0001-12
-            <strong>Endereço:</strong>
-            Avenida Getulio vargas 626, apartamento 103 - Menino Deus - Porto
-            Alegre - RS
-          </div>
-
-          <FaExclamationCircle size={30} color="#f39c12" />
-        </Concluidas>
+              {IconeStatus(cadastro.status)}
+            </Concluidas>
+          ))
+        )}
       </ConcluidasBody>
     </Container>
   );

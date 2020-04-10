@@ -11,7 +11,10 @@ class User extends Model {
         password: Sequelize.VIRTUAL,
         email: Sequelize.STRING,
         codigo_cigam: Sequelize.STRING,
-        is_sales: Sequelize.BOOLEAN
+        cargo: Sequelize.STRING,
+        is_sales: Sequelize.BOOLEAN,
+        is_adm: Sequelize.BOOLEAN,
+
       },
       {
         sequelize,
@@ -28,6 +31,7 @@ class User extends Model {
 
   static associate(models) {
     this.belongsTo(models.File, { foreignKey: 'avatar_id', as: 'avatar' });
+    this.hasMany(models.InfoCadastroClientes, { foreignKey: 'id_usuario', as: 'dadosUsuario' });
   }
 
   checkPassword(password){

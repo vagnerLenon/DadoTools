@@ -1,5 +1,14 @@
 import * as Yup from 'yup';
 
+import fs from 'fs';
+
+import jwt from 'jsonwebtoken';
+import {promisify} from 'util';
+
+import chaveToken from '../../credentials/Jwt';
+
+import DeletarImagem from '../../../temp/uploads';
+
 import User from '../models/User';
 import File from '../models/File';
 
@@ -11,6 +20,7 @@ class UserController{
       email: Yup.string().email().required(),
       password: Yup.string().required().min(6),
       codigo_cigam: Yup.string().max(6),
+      cargo: Yup.string().max(20),
       is_sales: Yup.number().max(1)
     });
 
@@ -26,14 +36,15 @@ class UserController{
       });
     }
 
-    const {id, nome, sobrenome, email, codigo_cigam, is_sales} = await User.create(req.body);
+    const {id, nome, sobrenome, email, codigo_cigam, is_sales, cargo} = await User.create(req.body);
     return res.json({
       id,
       nome,
       sobrenome,
       email,
       codigo_cigam,
-      is_sales
+      is_sales,
+      cargo
     });
   }
 
@@ -45,6 +56,8 @@ class UserController{
       password: Yup.string().min(6),
       codigo_cigam: Yup.string().max(6),
       is_sales: Yup.boolean(),
+      cargo: Yup.string(),
+      adm: Yup.boolean().default(false),
       oldPassword: Yup.string().min(6).when('password', (password, field)=>
       password?field.required():field
       ),
@@ -56,8 +69,7 @@ class UserController{
     if(!(await schema.isValid(req.body))){
       return res.status(400).json({error: 'Validation fails'})
     }
-
-      const {nome, sobrenome, email, codigo_cigam, is_sales, oldPassword} = req.body;
+      const {nome, sobrenome, email, codigo_cigam, is_sales, is_adm, oldPassword} = req.body;
 
       const user = await User.findByPk(req.idUsuario);
 
@@ -66,7 +78,7 @@ class UserController{
 
         if(userExists){
           return res.status(400).json({
-            error: "Usuário já existe.",
+            error: "Já existe um usuário com o e-mail informado.",
           });
         }
       }
@@ -75,9 +87,45 @@ class UserController{
         return res.status(401).json({error: "Senha inválida!"});
       }
 
+      //Caso o usuário esteja tentando passar o valor de adm como verdadeiro, precisa ser adm
+      if(is_adm){
+
+        const authHeader = req.headers.authorization;
+
+        if(!authHeader){
+          return res.status(401).json ({error: 'token not provide.'});
+        }
+
+        const [, token] = authHeader.split(' ');
+
+        try{
+          const decoded = await promisify(jwt.verify)(token, chaveToken.chave);
+          const {is_adm: isAdmin} = await User.findByPk(decoded.id);
+
+          if(!isAdmin){
+            req.body.is_adm = false;
+          }
+
+        }catch(err){
+          req.body.is_adm = false;
+        }
+      }
+
+      if(req.body.avatar_id){
+        try{
+        const {path} = await File.findByPk(user.avatar_id)
+        if(DeletarImagem(path)){
+          await File.destroy({where: {
+            id: user.avatar_id
+          }});
+        };
+        }catch(err){
+        }
+      }
+
       const {id:user_id} = await user.update(req.body);
 
-      const { id, name, avatar } = await User.findByPk(user_id, {
+      const { id, cargo, avatar } = await User.findByPk(user_id, {
         include: [
           {
             model: File,
@@ -87,7 +135,7 @@ class UserController{
         ],
       });
 
-
+      const{is_adm:isAdm} = req.body;
 
       return res.json({
         id,
@@ -96,6 +144,8 @@ class UserController{
         email,
         codigo_cigam,
         is_sales,
+        is_adm:isAdm,
+        cargo,
         avatar
       });
   }

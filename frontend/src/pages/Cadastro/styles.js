@@ -7,6 +7,7 @@ export const Container = styled.div`
   max-width: 900px;
   margin: 0 auto;
   padding: 20px 10px;
+
   h1 {
     font-size: 20px;
     margin-top: 20px;
@@ -20,6 +21,7 @@ export const Container = styled.div`
     background: rgba(255, 255, 255, 0.3);
   }
 `;
+
 export const Content = styled.div`
 margin-top`;
 
@@ -62,28 +64,29 @@ export const Title = styled.div`
   }
 `;
 
-export const New = styled.button`
-  width: 200px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.3);
-  border: 0;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.5);
-  transition: background 0.2s;
-  padding: 10px;
-  &:hover {
-    background: rgba(255, 255, 255, 0.5);
-  }
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  align-content: center;
+export const New = styled.div`
+  display: block;
+  margin-bottom: 20px;
 
   a {
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
     font-size: 20px;
-    color: #222;
+    width: 200px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.3);
+    border: 0;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.5);
+    transition: background 0.2s;
+    padding: 10px;
+    &:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
   }
 `;
 
@@ -93,15 +96,16 @@ export const LinhaCadastro = styled.div`
   border-radius: 4px;
   margin-bottom: 5px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
   font-size: 12px;
 
   svg {
+    width: 15px;
+    height: 15px;
     background: #fff;
     padding: 1px;
     border-radius: 50%;
-    border-style: solid;
+    border: 1px solid;
   }
 
   div {
@@ -138,31 +142,33 @@ export const LinhaCadastro = styled.div`
           font-size: 18px;
         }
 
-        button {
-          border: 0;
-          background: none;
+        a {
+          text-decoration: none;
+          color: #ab0d0b;
           margin-left: 10px;
-          font-size: 12px;
+          font-size: 14px;
         }
       }
     }
   }
 `;
+
 export const Concluidas = styled.div`
   padding: 10px 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 
   margin-bottom: 5px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
   font-size: 12px;
 
   svg {
+    width: 15px;
+    height: 15px;
     background: #fff;
     padding: 1px;
     border-radius: 50%;
-    border-style: solid;
+    border: 1px solid;
   }
 
   div {
@@ -199,11 +205,11 @@ export const Concluidas = styled.div`
           font-size: 14px;
         }
 
-        button {
-          border: 0;
-          background: none;
+        a {
+          text-decoration: none;
+          color: #ab0d0b;
           margin-left: 10px;
-          font-size: 12px;
+          font-size: 14px;
         }
       }
     }

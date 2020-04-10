@@ -38,7 +38,6 @@ export default function Dashboard() {
                 </h1>
                 <p>{app.Apps.descricao}</p>
               </Link>
-              <Link to="/" onClick={handleClickButton} />
             </li>
           ))}
       </AppList>

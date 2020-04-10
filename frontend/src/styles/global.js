@@ -16,17 +16,17 @@ export default createGlobalStyle`
     outline: 0;
   }
 
-  html, body, #root{
 
+  html, body, #root{
     height: 100%;
 
   }
 
-  body{
+  body, select, textarea{
     -webkit-font-smoothing: antialiased !important;
   }
 
-  body, input, button {
+  body, input, button, select, textarea {
     font-size: 14px;
   }
 

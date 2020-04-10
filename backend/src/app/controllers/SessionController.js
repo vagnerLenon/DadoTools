@@ -40,7 +40,7 @@ class SessionController{
       return res.status(401).json({error});
     }
 
-    const {id, nome, sobrenome, codigo_cigam, is_sales, avatar} = user;
+    const {id, nome, sobrenome, codigo_cigam, is_sales, cargo, is_adm, avatar} = user;
 
     return res.json({
       user:{
@@ -50,6 +50,8 @@ class SessionController{
         email,
         codigo_cigam,
         is_sales,
+        cargo,
+        is_adm,
         avatar
 
       },
@@ -61,7 +63,6 @@ class SessionController{
 
   async verify(req, res){
     const authHeader = req.headers.authorization;
-
     if(!authHeader){
       return res.status(401).json ({error: 'token not provide.'});
     }

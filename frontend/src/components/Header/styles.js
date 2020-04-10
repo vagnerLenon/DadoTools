@@ -24,9 +24,26 @@ export const Content = styled.div`
       border-right: 1px solid #eee;
       height: 40px;
     }
-    a {
+
+    div.apps + div {
+      &:before {
+        content: '|';
+        margin: 0 5px;
+      }
+    }
+
+    button {
       font-weight: bold;
       color: #7159c1;
+      background: transparent;
+      padding: 0 10px;
+      height: 40px;
+      border: 0;
+      border-radius: 4px;
+      transition: background 0.2s;
+      &:hover {
+        background: rgba(113, 89, 193, 0.1);
+      }
     }
   }
 

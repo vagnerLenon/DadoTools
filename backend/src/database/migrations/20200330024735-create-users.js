@@ -35,6 +35,15 @@ module.exports = {
           type: Sequelize.STRING,
           allowNull: false,
         },
+        cargo: {
+          type: Sequelize.STRING(20),
+          allowNull: true,
+        },
+        is_adm:{
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+        },
         created_at: {
           type: Sequelize.DATE,
           allowNull: false,
